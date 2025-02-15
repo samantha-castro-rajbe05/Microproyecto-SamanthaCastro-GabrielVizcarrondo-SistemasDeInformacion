@@ -1,3 +1,14 @@
+.boton-empezar{
+    background-color: darkslategray;
+    border: none;
+    color:white;
+    padding: 10px 25px;
+    text-decoration: none;
+    font-size: 1.4rem;
+    border-radius: 12px;
+    font-family: sans-serif;
+}
+
 body {
     font-family: Arial, sans-serif;
     display:flex;
