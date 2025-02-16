@@ -1,17 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
     const startButton = document.getElementById("start-button");
     const restartButton = document.getElementById("restart-button");
+    const showRankingButton = document.createElement("button");
 
-    // Cuando el botón "Empezar" es presionado
+    showRankingButton.id = "show-ranking";
+    showRankingButton.textContent = "Ver Ranking";
+    showRankingButton.classList.add("boton-empezar");
+    document.getElementById("pantalla-inicio").appendChild(showRankingButton);
+
+    // Iniciar juego
     startButton.addEventListener("click", (event) => {
-        event.preventDefault(); // Evita el comportamiento predeterminado (cargar otra página)
+        event.preventDefault();
         startGame();
     });
 
-    // Cuando el botón "Reiniciar" es presionado
+    // Reiniciar juego
     restartButton.addEventListener("click", () => {
         restartGame();
-        
+    });
+
+    // Mostrar ranking desde el inicio
+    showRankingButton.addEventListener("click", () => {
+        showRanking();
     });
 });
 
@@ -21,12 +31,13 @@ let playerSequence = [];
 let ronda = 0;
 let isPlayerTurn = false;
 let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
+
 const sounds = {
-    red:'./audios/562752__ion__b3 (mp3cut.net).mp3',
-    green:'./audios/562758__ion__c4 (mp3cut.net).mp3',
-    blue:'./audios/562759__ion__f3 (mp3cut.net).mp3',
-    yellow:'./audios/608987__smstrahan__g (mp3cut.net).mp3'
-}
+    red: "./audios/562752__ion__b3 (mp3cut.net).mp3",
+    green: "./audios/562758__ion__c4 (mp3cut.net).mp3",
+    blue: "./audios/562759__ion__f3 (mp3cut.net).mp3",
+    yellow: "./audios/608987__smstrahan__g (mp3cut.net).mp3"
+};
 
 const startScreen = document.getElementById("pantalla-inicio");
 const gameScreen = document.getElementById("game-screen");
@@ -34,16 +45,20 @@ const rankingScreen = document.getElementById("pantalla-ranking");
 const rankingList = document.getElementById("lista-ranking");
 const circles = document.querySelectorAll(".circle");
 
-// Cuando se hace clic en los círculos
+// Manejo de clic en los círculos
 circles.forEach(circle => {
     circle.addEventListener("click", () => {
         if (isPlayerTurn) {
             playerSequence.push(circle.id);
             playSound(circle.id);
             if (!checkSequence()) {
-                endGame();
+                setTimeout(() => {
+                    endGame();
+                }, 500);
             } else if (playerSequence.length === gameSequence.length) {
-                nextRound(); // Avanza a la siguiente ronda
+                setTimeout(() => {
+                    nextRound();
+                }, 800);
             }
         }
     });
@@ -55,10 +70,12 @@ function startGame() {
         alert("Por favor, ingresa tu nombre.");
         return;
     }
-    localStorage.setItem("nombre-jugador", nombreJugador); // Guarda el nombre
-    startScreen.style.display = "none"; // Oculta la pantalla de inicio
-    gameScreen.style.display = "block"; // Muestra la pantalla de juego
-    nextRound(); // Empieza la primera ronda
+    localStorage.setItem("nombre-jugador", nombreJugador);
+    startScreen.style.display = "none";
+    gameScreen.style.display = "block";
+    ronda = 0;
+    gameSequence = [];
+    nextRound();
 }
 
 function getRandomCircle() {
@@ -67,21 +84,20 @@ function getRandomCircle() {
 }
 
 function checkSequence() {
-    // Verifica si la secuencia del jugador es correcta
     for (let i = 0; i < playerSequence.length; i++) {
         if (playerSequence[i] !== gameSequence[i]) {
-            return false; // Si hay un error, se retorna falso
+            return false;
         }
     }
-    return true; // Si todas las respuestas son correctas, retorna verdadero
+    return true;
 }
 
 function nextRound() {
-    playerSequence = []; // Limpia la secuencia del jugador
-    isPlayerTurn = false; // No se puede jugar hasta que la secuencia de Simon termine
-    ronda++; // Incrementa la ronda
-    gameSequence.push(getRandomCircle()); // Añade un nuevo color a la secuencia de Simon
-    playSequence(); // Reproduce la secuencia de Simon
+    playerSequence = [];
+    isPlayerTurn = false;
+    ronda++;
+    gameSequence.push(getRandomCircle());
+    playSequence();
 }
 
 function playSequence() {
@@ -93,7 +109,7 @@ function playSequence() {
         if (i >= gameSequence.length) {
             clearInterval(interval);
             setTimeout(() => {
-                isPlayerTurn = true; // Permite al jugador interactuar después de que Simon termine su secuencia
+                isPlayerTurn = true;
             }, 500);
         }
     }, 1000);
@@ -117,15 +133,16 @@ function highlightCircle(color) {
 function endGame() {
     alert(`Juego terminado. Llegaste a la ronda ${ronda}.`);
     ranking.push({ nombre: nombreJugador, puntuacion: ronda });
-    ranking.sort((a, b) => b.puntuacion - a.puntuacion); // Ordena los jugadores por puntuación
-    localStorage.setItem("ranking", JSON.stringify(ranking)); // Guarda el ranking en localStorage
-    showRanking(); // Muestra el ranking
+    ranking.sort((a, b) => b.puntuacion - a.puntuacion);
+    localStorage.setItem("ranking", JSON.stringify(ranking));
+    showRanking();
 }
 
 function showRanking() {
-    rankingScreen.style.display = "block"; // Muestra la pantalla de ranking
-    gameScreen.style.display = "none"; // Oculta la pantalla de juego
-    rankingList.innerHTML = ""; // Limpia la lista de ranking
+    rankingScreen.style.display = "block";
+    gameScreen.style.display = "none";
+    startScreen.style.display = "none";
+    rankingList.innerHTML = "";
     ranking.forEach((jugador, index) => {
         const item = document.createElement("p");
         item.textContent = `${index + 1}. ${jugador.nombre} - ${jugador.puntuacion}`;
@@ -133,21 +150,18 @@ function showRanking() {
     });
 }
 
-function restartGame(){
-    //reinicia el juego
+function restartGame() {
     gameSequence = [];
     playerSequence = [];
     ronda = 0;
-    isPLayerTurn = false;
+    isPlayerTurn = false;
 
-    //reiniciamos la pantalla
     startScreen.style.display = "block";
     rankingScreen.style.display = "none";
-    gameScreen.style.display= "none";
+    gameScreen.style.display = "none";
 
-    localStorage.removeItem("ranking");//limpiamos el ranking
-    localStorage.removeItem("nombre-jugador")//limpiamos nombre del jugador
-
+    localStorage.removeItem("ranking");
+    localStorage.removeItem("nombre-jugador");
 }
 
 
