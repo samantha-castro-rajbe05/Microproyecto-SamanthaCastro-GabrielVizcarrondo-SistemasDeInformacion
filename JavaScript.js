@@ -10,10 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Cuando el botón "Reiniciar" es presionado
     restartButton.addEventListener("click", () => {
-        startScreen.style.display = "block"; // Muestra la pantalla de inicio
-        rankingScreen.style.display = "none"; // Oculta la pantalla de ranking
-        gameScreen.style.display = "none"; // Oculta la pantalla del juego
-        localStorage.removeItem("nombre-jugador"); // Limpia el nombre del jugador
+        restartGame();
+        
     });
 });
 
@@ -23,6 +21,12 @@ let playerSequence = [];
 let ronda = 0;
 let isPlayerTurn = false;
 let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
+const sounds = {
+    red:'./audios/562752__ion__b3 (mp3cut.net).mp3',
+    green:'./audios/562758__ion__c4 (mp3cut.net).mp3',
+    blue:'./audios/562759__ion__f3 (mp3cut.net).mp3',
+    yellow:'./audios/608987__smstrahan__g (mp3cut.net).mp3'
+}
 
 const startScreen = document.getElementById("pantalla-inicio");
 const gameScreen = document.getElementById("game-screen");
@@ -96,7 +100,7 @@ function playSequence() {
 }
 
 function playSound(color) {
-    let audio = new Audio(`sounds/${color}.mp3`);
+    let audio = new Audio(sounds[color]);
     audio.play();
 }
 
@@ -127,6 +131,23 @@ function showRanking() {
         item.textContent = `${index + 1}. ${jugador.nombre} - ${jugador.puntuacion}`;
         rankingList.appendChild(item);
     });
+}
+
+function restartGame(){
+    //reinicia el juego
+    gameSequence = [];
+    playerSequence = [];
+    ronda = 0;
+    isPLayerTurn = false;
+
+    //reiniciamos la pantalla
+    startScreen.style.display = "block";
+    rankingScreen.style.display = "none";
+    gameScreen.style.display= "none";
+
+    localStorage.removeItem("ranking");//limpiamos el ranking
+    localStorage.removeItem("nombre-jugador")//limpiamos nombre del jugador
+
 }
 
 
