@@ -22,10 +22,10 @@ let ronda = 0;
 let isPlayerTurn = false;
 let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
 const sounds = {
-    red:'.audios/562752__ion__b3 (mp3cut.net)',
-    green:'.audios/562758__ion__c4 (mp3cut.net)',
-    blue:'.audios/562759__ion__f3 (mp3cut.net)',
-    yellow:'.audios/608987__smstrahan__g (mp3cut.net)'
+    red:'./audios/562752__ion__b3 (mp3cut.net).mp3',
+    green:'./audios/562758__ion__c4 (mp3cut.net).mp3',
+    blue:'./audios/562759__ion__f3 (mp3cut.net).mp3',
+    yellow:'./audios/608987__smstrahan__g (mp3cut.net).mp3'
 }
 
 const startScreen = document.getElementById("pantalla-inicio");
